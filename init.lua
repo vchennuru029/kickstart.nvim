@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -477,6 +477,11 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/cmp-buffer',
+      'hrsh7th/cmp-path',
+      'hrsh7th/cmp-cmdline',
+      'hrsh7th/nvim-cmp',
+      'jiangmiao/auto-pairs',
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -671,6 +676,24 @@ require('lazy').setup({
         -- ts_ls = {},
         --
 
+        fortls = {
+          cmd = {
+            vim.fn.expand '/cldata/vchennuru/opt/anaconda3/envs/fortls_env/bin/fortls',
+            '--lowercase_intrinsics',
+            '--hover_signature',
+            '--hover_language=fortran',
+            '--use_signature_help',
+          }, -- Use the correct path to fortls
+          filetypes = { 'fortran' },
+          root_dir = require('lspconfig.util').root_pattern('.git', '*.f90', '*.f', '*.f95'),
+          settings = {
+            nthreads = 4, -- Adjust based on your system
+            max_line_length = 120,
+            hover_signature = true,
+            lower_case_intrinsics = true,
+            include_dirs = { 'src', 'include' }, -- Modify as needed
+          },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -786,12 +809,14 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              -- require('luasnip.loaders.from_vscode').lazy_load { paths = { './snippets' } }
+              require('luasnip.loaders.from_vscode').lazy_load()
+              -- '/home/vchennuru/.var/app/io.neovim.nvim/data/nvim/lazy/friendly-snippets/snippets',
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -807,7 +832,7 @@ require('lazy').setup({
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
-      luasnip.config.setup {}
+      luasnip.config.setup { enable_autosnippets = true }
 
       cmp.setup {
         snippet = {
@@ -985,14 +1010,14 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
